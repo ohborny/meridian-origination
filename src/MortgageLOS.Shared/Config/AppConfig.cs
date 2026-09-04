@@ -138,6 +138,12 @@ namespace MortgageLOS
 
         public string GetConnectionString(string name)
         {
+            string environmentValue = GetEnvironmentOverride("CONNECTIONSTRING", name);
+            if (!string.IsNullOrEmpty(environmentValue))
+            {
+                return environmentValue;
+            }
+
             if (_connectionStrings.TryGetValue(name, out string connStr))
             {
                 return connStr;
@@ -147,11 +153,36 @@ namespace MortgageLOS
 
         public string GetSetting(string key, string defaultValue = "")
         {
+            string environmentValue = GetEnvironmentOverride("SETTING", key);
+            if (!string.IsNullOrEmpty(environmentValue))
+            {
+                return environmentValue;
+            }
+
             if (_appSettings.TryGetValue(key, out string val))
             {
                 return val;
             }
             return defaultValue;
+        }
+
+        private static string GetEnvironmentOverride(string category, string key)
+        {
+            string environmentKey = "MORTGAGELOS_" + category + "_" + ToEnvironmentKey(key);
+            return System.Environment.GetEnvironmentVariable(environmentKey);
+        }
+
+        private static string ToEnvironmentKey(string value)
+        {
+            char[] characters = value.ToUpperInvariant().ToCharArray();
+            for (int i = 0; i < characters.Length; i++)
+            {
+                if (!char.IsLetterOrDigit(characters[i]))
+                {
+                    characters[i] = '_';
+                }
+            }
+            return new string(characters);
         }
 
         public int GetIntSetting(string key, int defaultValue = 0)
