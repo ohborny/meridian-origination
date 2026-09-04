@@ -62,7 +62,25 @@ dotnet run --project src/MortgageLOS.BatchJobs -- overnight
 
 ### Configuration
 
-Configuration is in `config/los.config`. See the file for available settings.
+Configuration defaults are in `config/los.config`. To keep local credentials
+and environment-specific settings out of the repository, copy the template and
+set the values for your environment:
+
+```bash
+cp .env.example .env
+set -a && source .env && set +a
+```
+
+Environment overrides use these names:
+
+- Connection strings: `MORTGAGELOS_CONNECTIONSTRING_<DATABASE_NAME>`
+- Application settings: `MORTGAGELOS_SETTING_<SETTING_NAME>`
+
+Names are uppercased, and non-alphanumeric characters become underscores. For
+example, `los_core` is `MORTGAGELOS_CONNECTIONSTRING_LOS_CORE`, and
+`AusEndpoint` is `MORTGAGELOS_SETTING_AUSENDPOINT`. See `.env.example` for the
+full local-development template. Never commit `.env` files or production
+credentials.
 
 ## Key Concepts
 

@@ -33,5 +33,8 @@ Thumbs.db
 .nuget/
 
 # Secrets (don't commit real connection strings)
+.env
+.env.*
+!.env.example
 config/local.config
 config/secrets.config
