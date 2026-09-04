@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>MortgageLOS.Compliance</RootNamespace>
+    <AssemblyName>MortgageLOS.Compliance</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MortgageLOS.Shared\MortgageLOS.Shared.csproj" />
+    <ProjectReference Include="..\MortgageLOS.Origination\MortgageLOS.Origination.csproj" />
+  </ItemGroup>
+
+</Project>

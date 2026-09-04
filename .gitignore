@@ -1,0 +1,37 @@
+# .NET build output
+bin/
+obj/
+*.dll
+*.pdb
+*.exe
+
+# IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Logs and temp files
+logs/
+*.log
+*.tmp
+
+# Batch file handoffs (CSV working files)
+data/batch/*.csv
+data/batch/*.tmp
+data/batch/archive/
+
+# PostgreSQL data (local dev)
+pgdata/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# NuGet
+*.nupkg
+.nuget/
+
+# Secrets (don't commit real connection strings)
+config/local.config
+config/secrets.config

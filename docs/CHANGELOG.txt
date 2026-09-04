@@ -1,0 +1,206 @@
+================================================================================
+ MortgageLOS Change Log
+================================================================================
+
+NOTE: This change log was maintained until 2019. After that, changes were
+tracked in JIRA. The JIRA project is LOS. Good luck finding anything.
+
+--------------------------------------------------------------------------------
+Version 4.2.17 (2024-03-15)
+--------------------------------------------------------------------------------
+- Updated NMLS unique identifier requirements
+- Fixed HMDA race condition in batch sync (LOS-3455)
+- Updated holiday list for 2024
+- Various security patches
+
+--------------------------------------------------------------------------------
+Version 4.2.16 (2023-11-20)
+--------------------------------------------------------------------------------
+- Added SCRA (Servicemembers Civil Relief Act) checks
+- Completed .NET 8 migration
+- Updated all NuGet packages
+- Fixed PostgreSQL 14 compatibility issues
+
+--------------------------------------------------------------------------------
+Version 4.2.15 (2023-06-10)
+--------------------------------------------------------------------------------
+- Updated DU to version 12.3
+- Fixed TRID tolerance calculation for zero-fee loans
+- Added support for Non-QM DSCR loans
+- Performance improvements in batch processing
+
+--------------------------------------------------------------------------------
+Version 4.2.14 (2022-08-01)
+--------------------------------------------------------------------------------
+- Updated DU to version 12.2
+- Fixed fair lending review false positives
+- Added trended credit data support
+- Fixed loan number generation race condition
+
+--------------------------------------------------------------------------------
+Version 4.2.13 (2021-12-15)
+--------------------------------------------------------------------------------
+- Added COVID-19 forbearance tracking (temporary)
+- Updated HMDA quarterly filing support
+- Fixed compliance exception expiry logic
+- Various bug fixes
+
+--------------------------------------------------------------------------------
+Version 4.2.12 (2020-06-01)
+--------------------------------------------------------------------------------
+- Added e-disclosure tracking
+- Fixed batch job file locking issue (INC-2020-017)
+- Updated state disclosure rules for CA, TX, NY
+- Added HMDA data quality scoring
+
+--------------------------------------------------------------------------------
+Version 4.2.11 (2019-09-15)
+--------------------------------------------------------------------------------
+- Started .NET Core migration (30% complete, then paused)
+- Updated fair lending review algorithms
+- Added automated compliance check versioning
+- Fixed DTI override approval workflow
+
+--------------------------------------------------------------------------------
+Version 4.2.10 (2019-03-15)
+--------------------------------------------------------------------------------
+- Updated architecture documentation
+- Added loan product Non-QM Bank Statement
+- Fixed appraisal disclosure timing
+- Various performance improvements
+
+--------------------------------------------------------------------------------
+Version 4.2.9 (2018-11-01)
+--------------------------------------------------------------------------------
+- Added HMDA 2018 data points (new race/ethnicity/sex fields)
+- Added automated underwriting system (AUS) data to HMDA
+- Updated fair lending review to use new HMDA data
+- Fixed state disclosure rule matching for multi-purpose loans
+
+--------------------------------------------------------------------------------
+Version 4.2.8 (2018-03-20)
+--------------------------------------------------------------------------------
+- Added HMDA quarterly filing support
+- Updated compliance check framework
+- Fixed loan status history audit trail
+- Added document expiration tracking
+
+--------------------------------------------------------------------------------
+Version 4.2.7 (2017-08-10)
+--------------------------------------------------------------------------------
+- Added trended credit data support (partial)
+- Fixed LTV calculation (added * 100 to convert to percentage)
+- NOTE: CLTV calculation was NOT updated. See comment in code.
+- Added investor-specific document requirements
+- Updated loan officer NMLS tracking
+
+--------------------------------------------------------------------------------
+Version 4.2.6 (2017-01-15)
+--------------------------------------------------------------------------------
+- Added self-employed income analysis
+- Updated DTI calculation for gig economy income
+- Fixed credit pull log FCRA compliance fields
+- Added borrower authorization tracking
+
+--------------------------------------------------------------------------------
+Version 4.2.5 (2016-09-01)
+--------------------------------------------------------------------------------
+- Added document management module
+- Added document verification tracking
+- Updated batch job scheduling
+- Fixed cross-database sync race condition
+
+--------------------------------------------------------------------------------
+Version 4.2.4 (2016-03-10)
+--------------------------------------------------------------------------------
+- Added closing/funding module
+- Updated investor report generation
+- Fixed TRID CD waiting period calculation
+- Added rate lock expiry tracking
+
+--------------------------------------------------------------------------------
+Version 4.2.3 (2015-10-03)
+--------------------------------------------------------------------------------
+- Added TRID (TILA-RESPA Integrated Disclosure) compliance
+- Added Loan Estimate and Closing Disclosure tracking
+- Added TRID timeline management
+- Updated compliance check framework
+
+--------------------------------------------------------------------------------
+Version 4.2.2 (2015-03-01)
+--------------------------------------------------------------------------------
+- Added HMDA 2015 reporting changes
+- Updated state disclosure rules (added 15 new states)
+- Fixed batch job file truncation issue
+- Added fair lending review framework
+
+--------------------------------------------------------------------------------
+Version 4.2.1 (2014-06-15)
+--------------------------------------------------------------------------------
+- Added HOEPA, HPML, and QM compliance checks
+- Added ability to repay verification
+- Updated DTI guidelines for QM rule
+- Fixed compliance exception workflow
+
+--------------------------------------------------------------------------------
+Version 4.2.0 (2014-01-01)
+--------------------------------------------------------------------------------
+- Major compliance update for CFPB rules
+- Added HMDA 2014 changes
+- Updated credit pull FCRA compliance
+- Various bug fixes
+
+--------------------------------------------------------------------------------
+Version 4.1.5 (2013-09-20)
+--------------------------------------------------------------------------------
+- Added compliance exception management
+- Updated state disclosure rules
+- Fixed loan status transition validation
+- Performance improvements
+
+--------------------------------------------------------------------------------
+Version 4.1.0 (2013-03-01)
+--------------------------------------------------------------------------------
+- Added underwriting module
+- Added AUS integration (DU and LP)
+- Added condition tracking
+- Updated pipeline management
+
+--------------------------------------------------------------------------------
+Version 4.0.0 (2012-06-01)
+--------------------------------------------------------------------------------
+- Added compliance module
+- Added HMDA data collection
+- Added state-specific disclosure tracking
+- Major database schema changes
+
+--------------------------------------------------------------------------------
+Version 3.5.0 (2010-08-01)
+--------------------------------------------------------------------------------
+- Added NMLS tracking for loan officers
+- Updated credit report integration
+- Various bug fixes
+
+--------------------------------------------------------------------------------
+Version 3.0.0 (2008-03-15)
+--------------------------------------------------------------------------------
+- Added credit analysis module
+- Added DTI calculation
+- Added credit pull batch processing
+- Added file-based handoff system
+
+--------------------------------------------------------------------------------
+Version 2.0.0 (2007-01-01)
+--------------------------------------------------------------------------------
+- Added loan product management
+- Added rate sheet support
+- Added pipeline reporting
+- Various improvements
+
+--------------------------------------------------------------------------------
+Version 1.0.0 (2005-06-01)
+--------------------------------------------------------------------------------
+- Initial release
+- Loan application intake
+- Basic pipeline management
+- Loan officer and branch management

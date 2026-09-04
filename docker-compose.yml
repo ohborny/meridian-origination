@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: mortgage_los_db
+    environment:
+      POSTGRES_USER: los_admin
+      POSTGRES_PASSWORD: L0sAdmin#2024!
+      POSTGRES_DB: los_core
+    ports:
+      - "5433:5432"
+    volumes:
+      - los_pgdata:/var/lib/postgresql/data
+      - ./sql/00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
+      # The Postgres entrypoint only runs scripts at the top level of
+      # /docker-entrypoint-initdb.d, so the per-database SQL is mounted out of the
+      # way and loaded by 01_load_schemas.sh instead.
+      - ./sql:/docker-entrypoint-initdb.d/sql
+      - ./scripts/docker/01_load_schemas.sh:/docker-entrypoint-initdb.d/01_load_schemas.sh
+    healthcheck:
+      # -d is required: pg_isready otherwise probes a database named after the user,
+      # which floods the server log with 'database "los_admin" does not exist'.
+      test: ["CMD-SHELL", "pg_isready -U los_admin -d los_core"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  los_pgdata:

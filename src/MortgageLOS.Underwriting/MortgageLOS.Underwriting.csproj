@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>MortgageLOS.Underwriting</RootNamespace>
+    <AssemblyName>MortgageLOS.Underwriting</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MortgageLOS.Shared\MortgageLOS.Shared.csproj" />
+    <ProjectReference Include="..\MortgageLOS.Credit\MortgageLOS.Credit.csproj" />
+  </ItemGroup>
+
+</Project>

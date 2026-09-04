@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <RootNamespace>MortgageLOS.Closing</RootNamespace>
+    <AssemblyName>MortgageLOS.Closing</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MortgageLOS.Shared\MortgageLOS.Shared.csproj" />
+    <ProjectReference Include="..\MortgageLOS.Underwriting\MortgageLOS.Underwriting.csproj" />
+    <ProjectReference Include="..\MortgageLOS.Compliance\MortgageLOS.Compliance.csproj" />
+    <ProjectReference Include="..\MortgageLOS.Documents\MortgageLOS.Documents.csproj" />
+  </ItemGroup>
+
+</Project>

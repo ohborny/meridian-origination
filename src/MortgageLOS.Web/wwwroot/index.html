@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>MortgageLOS - Loan Origination System</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js"></script>
+</head>
+<body onload="init()">
+
+<!-- ============ HEADER ============ -->
+<div id="header">
+    <div id="header-left">
+        <span id="logo">MortgageLOS</span>
+        <span id="version">v4.2.17</span>
+    </div>
+    <div id="header-right">
+        <span id="user-info">User: <b>jsmith</b> (John Smith, Sr. LO)</span>
+        <span id="clock"></span>
+    </div>
+</div>
+
+<!-- ============ MAIN LAYOUT ============ -->
+<table id="layout" cellpadding="0" cellspacing="0" border="0">
+<tr>
+    <!-- ===== SIDEBAR ===== -->
+    <td id="sidebar" valign="top">
+        <div class="nav-section">Main Menu</div>
+        <a href="#" onclick="showPipeline(); return false;" class="nav-item" id="nav-pipeline">&#9658; Pipeline</a>
+        <a href="#" onclick="showNewApplication(); return false;" class="nav-item" id="nav-newapp">&#9658; New Application</a>
+        <a href="#" onclick="showSearch(); return false;" class="nav-item" id="nav-search">&#9658; Loan Search</a>
+        <a href="#" onclick="showAgingReport(); return false;" class="nav-item" id="nav-aging">&#9658; Aging Report</a>
+        <div class="nav-section">Reports</div>
+        <a href="#" onclick="alert('Report module not yet licensed. Contact IT.'); return false;" class="nav-item-disabled">&#9658; HMDA LAR</a>
+        <a href="#" onclick="alert('Report module not yet licensed. Contact IT.'); return false;" class="nav-item-disabled">&#9658; Investor Report</a>
+        <a href="#" onclick="alert('Report module not yet licensed. Contact IT.'); return false;" class="nav-item-disabled">&#9658; Compliance Summary</a>
+        <div class="nav-section">Administration</div>
+        <a href="#" onclick="alert('Access denied. Contact your administrator.'); return false;" class="nav-item-disabled">&#9658; User Management</a>
+        <a href="#" onclick="alert('Access denied. Contact your administrator.'); return false;" class="nav-item-disabled">&#9658; Rate Sheets</a>
+        <a href="#" onclick="alert('Access denied. Contact your administrator.'); return false;" class="nav-item-disabled">&#9658; System Config</a>
+        <div class="nav-section">Batch Jobs</div>
+        <a href="#" onclick="alert('Batch jobs must be run from the server. See scripts/run_overnight_batch.sh'); return false;" class="nav-item-disabled">&#9658; Overnight Batch</a>
+        <a href="#" onclick="alert('Batch jobs must be run from the server. See scripts/run_credit_batch.sh'); return false;" class="nav-item-disabled">&#9658; Credit Pull Batch</a>
+        <div style="padding:8px; font-size:10px; color:#888;">
+            Session ID: ASPNET-7f3a2b1c<br />
+            Server: PROD-LOS-WEB-03<br />
+            DB: los_core / los_credit<br />
+            DB: los_compliance / los_customer
+        </div>
+    </td>
+
+    <!-- ===== CONTENT AREA ===== -->
+    <td id="content" valign="top">
+
+        <!-- BREADCRUMB -->
+        <div id="breadcrumb">
+            <a href="#" onclick="showPipeline(); return false;">Home</a>
+            <span id="breadcrumb-sep"> &gt; </span>
+            <span id="breadcrumb-current">Pipeline</span>
+        </div>
+
+        <!-- ===== PIPELINE VIEW ===== -->
+        <div id="view-pipeline" class="view">
+            <div class="page-header">
+                <span class="page-title">Loan Pipeline</span>
+                <span class="page-actions">
+                    <button onclick="showNewApplication()" class="btn">+ New Application</button>
+                    <button onclick="loadPipeline()" class="btn">Refresh</button>
+                </span>
+            </div>
+            <div id="pipeline-message" class="info-msg">Loading pipeline...</div>
+            <div id="pipeline-filters">
+                <label>Filter by Status:</label>
+                <select id="filter-status" onchange="filterPipeline()">
+                    <option value="">-- All --</option>
+                    <option value="APPLICATION">Application</option>
+                    <option value="PROCESSING">Processing</option>
+                    <option value="UNDERWRITING">Underwriting</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="CLEAR_TO_CLOSE">Clear to Close</option>
+                    <option value="CLOSING">Closing</option>
+                    <option value="FUNDED">Funded</option>
+                    <option value="SHIPPED">Shipped</option>
+                    <option value="PURCHASED">Purchased</option>
+                </select>
+                &nbsp;
+                <label>Filter by Branch:</label>
+                <select id="filter-branch" onchange="filterPipeline()">
+                    <option value="">-- All --</option>
+                </select>
+            </div>
+            <div id="pipeline-table"></div>
+        </div>
+
+        <!-- ===== LOAN DETAIL VIEW ===== -->
+        <div id="view-detail" class="view" style="display:none;">
+            <div class="page-header">
+                <span class="page-title" id="detail-title">Loan Detail</span>
+                <span class="page-actions">
+                    <button onclick="showPipeline()" class="btn">&lt; Back to Pipeline</button>
+                </span>
+            </div>
+
+            <!-- Action Bar -->
+            <div id="action-bar" class="action-bar">
+                <button onclick="pullCredit()" class="btn-action">Pull Credit</button>
+                <button onclick="calculateDti()" class="btn-action">Calculate DTI</button>
+                <button onclick="runAus()" class="btn-action">Run AUS (DU)</button>
+                <button onclick="submitUw()" class="btn-action">Submit to UW</button>
+                <button onclick="runCompliance()" class="btn-action">Run Compliance</button>
+                <button onclick="advanceStage()" class="btn-action">Advance Stage</button>
+                <button onclick="clearToClose()" class="btn-action">Clear to Close</button>
+                <button onclick="loadLoanDetail(currentLoanNumber)" class="btn">Refresh</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tab-bar">
+                <a href="#" onclick="switchTab('general'); return false;" class="tab tab-active" id="tab-general">General</a>
+                <a href="#" onclick="switchTab('credit'); return false;" class="tab" id="tab-credit">Credit</a>
+                <a href="#" onclick="switchTab('uw'); return false;" class="tab" id="tab-uw">Underwriting</a>
+                <a href="#" onclick="switchTab('compliance'); return false;" class="tab" id="tab-compliance">Compliance</a>
+                <a href="#" onclick="switchTab('docs'); return false;" class="tab" id="tab-docs">Documents</a>
+            </div>
+
+            <!-- General Tab -->
+            <div id="tab-content-general" class="tab-content">
+                <div id="loan-general"></div>
+            </div>
+
+            <!-- Credit Tab -->
+            <div id="tab-content-credit" class="tab-content" style="display:none;">
+                <div id="loan-credit"></div>
+            </div>
+
+            <!-- Underwriting Tab -->
+            <div id="tab-content-uw" class="tab-content" style="display:none;">
+                <div id="loan-uw"></div>
+            </div>
+
+            <!-- Compliance Tab -->
+            <div id="tab-content-compliance" class="tab-content" style="display:none;">
+                <div id="loan-compliance"></div>
+            </div>
+
+            <!-- Documents Tab -->
+            <div id="tab-content-docs" class="tab-content" style="display:none;">
+                <div id="loan-docs"></div>
+            </div>
+        </div>
+
+        <!-- ===== NEW APPLICATION VIEW ===== -->
+        <div id="view-newapp" class="view" style="display:none;">
+            <div class="page-header">
+                <span class="page-title">New Loan Application</span>
+            </div>
+            <form id="newapp-form" onsubmit="submitNewApplication(); return false;">
+                <fieldset>
+                    <legend>Borrower Information</legend>
+                    <table class="form-table">
+                        <tr>
+                            <td><label>First Name: *</label></td>
+                            <td><input type="text" id="na-borrower-first" required /></td>
+                            <td><label>Last Name: *</label></td>
+                            <td><input type="text" id="na-borrower-last" required /></td>
+                        </tr>
+                        <tr>
+                            <td><label>SSN: *</label></td>
+                            <td><input type="text" id="na-borrower-ssn" placeholder="XXX-XX-XXXX" required /></td>
+                            <td><label>Date of Birth:</label></td>
+                            <td><input type="date" id="na-borrower-dob" /></td>
+                        </tr>
+                        <tr>
+                            <td><label>Email:</label></td>
+                            <td><input type="email" id="na-borrower-email" /></td>
+                            <td><label>Phone:</label></td>
+                            <td><input type="text" id="na-borrower-phone" /></td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>Co-Borrower (Optional)</legend>
+                    <table class="form-table">
+                        <tr>
+                            <td><label>First Name:</label></td>
+                            <td><input type="text" id="na-coborrower-first" /></td>
+                            <td><label>Last Name:</label></td>
+                            <td><input type="text" id="na-coborrower-last" /></td>
+                        </tr>
+                        <tr>
+                            <td><label>SSN:</label></td>
+                            <td><input type="text" id="na-coborrower-ssn" placeholder="XXX-XX-XXXX" /></td>
+                            <td><label>Monthly Income:</label></td>
+                            <td><input type="number" id="na-coborrower-income" step="0.01" /></td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>Loan Details</legend>
+                    <table class="form-table">
+                        <tr>
+                            <td><label>Loan Purpose: *</label></td>
+                            <td>
+                                <select id="na-purpose" required>
+                                    <option value="">-- Select --</option>
+                                    <option value="PURCHASE">Purchase</option>
+                                    <option value="REFINANCE">Refinance</option>
+                                    <option value="CASHOUT_REFI">Cash-Out Refinance</option>
+                                    <option value="CONSTRUCTION">Construction</option>
+                                </select>
+                            </td>
+                            <td><label>Product: *</label></td>
+                            <td>
+                                <select id="na-product" required>
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Loan Amount: *</label></td>
+                            <td><input type="number" id="na-loan-amount" step="0.01" required /></td>
+                            <td><label>Property Value: *</label></td>
+                            <td><input type="number" id="na-property-value" step="0.01" required /></td>
+                        </tr>
+                        <tr>
+                            <td><label>Monthly Income: *</label></td>
+                            <td><input type="number" id="na-monthly-income" step="0.01" required /></td>
+                            <td><label>Branch:</label></td>
+                            <td>
+                                <select id="na-branch">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Loan Officer:</label></td>
+                            <td>
+                                <select id="na-loan-officer">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>Property Information</legend>
+                    <table class="form-table">
+                        <tr>
+                            <td><label>Address: *</label></td>
+                            <td colspan="3"><input type="text" id="na-prop-addr" style="width:400px;" required /></td>
+                        </tr>
+                        <tr>
+                            <td><label>City: *</label></td>
+                            <td><input type="text" id="na-prop-city" required /></td>
+                            <td><label>State: *</label></td>
+                            <td>
+                                <select id="na-prop-state" required>
+                                    <option value="">--</option>
+                                    <option value="AL">AL</option><option value="AK">AK</option><option value="AZ">AZ</option>
+                                    <option value="AR">AR</option><option value="CA">CA</option><option value="CO">CO</option>
+                                    <option value="CT">CT</option><option value="DE">DE</option><option value="FL">FL</option>
+                                    <option value="GA">GA</option><option value="HI">HI</option><option value="ID">ID</option>
+                                    <option value="IL">IL</option><option value="IN">IN</option><option value="IA">IA</option>
+                                    <option value="KS">KS</option><option value="KY">KY</option><option value="LA">LA</option>
+                                    <option value="ME">ME</option><option value="MD">MD</option><option value="MA">MA</option>
+                                    <option value="MI">MI</option><option value="MN">MN</option><option value="MS">MS</option>
+                                    <option value="MO">MO</option><option value="MT">MT</option><option value="NE">NE</option>
+                                    <option value="NV">NV</option><option value="NH">NH</option><option value="NJ">NJ</option>
+                                    <option value="NM">NM</option><option value="NY">NY</option><option value="NC">NC</option>
+                                    <option value="ND">ND</option><option value="OH">OH</option><option value="OK">OK</option>
+                                    <option value="OR">OR</option><option value="PA">PA</option><option value="RI">RI</option>
+                                    <option value="SC">SC</option><option value="SD">SD</option><option value="TN">TN</option>
+                                    <option value="TX">TX</option><option value="UT">UT</option><option value="VT">VT</option>
+                                    <option value="VA">VA</option><option value="WA">WA</option><option value="WV">WV</option>
+                                    <option value="WI">WI</option><option value="WY">WY</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Zip: *</label></td>
+                            <td><input type="text" id="na-prop-zip" required /></td>
+                            <td><label>Property Type:</label></td>
+                            <td>
+                                <select id="na-prop-type">
+                                    <option value="SFR">Single Family Residence</option>
+                                    <option value="CONDO">Condominium</option>
+                                    <option value="TOWNHOUSE">Townhouse</option>
+                                    <option value="2U">2-Unit</option>
+                                    <option value="3U">3-Unit</option>
+                                    <option value="4U">4-Unit</option>
+                                    <option value="MANUF">Manufactured</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Occupancy:</label></td>
+                            <td>
+                                <select id="na-prop-occupancy">
+                                    <option value="PRIMARY">Primary Residence</option>
+                                    <option value="SECONDARY">Second Home</option>
+                                    <option value="INVESTMENT">Investment</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <fieldset>
+                    <legend>HMDA Demographics (Optional - Collected for Regulatory Reporting)</legend>
+                    <table class="form-table">
+                        <tr>
+                            <td><label>Race:</label></td>
+                            <td>
+                                <select id="na-hmda-race">
+                                    <option value="">-- Not Provided --</option>
+                                    <option value="ASIAN">Asian</option>
+                                    <option value="ASIAN_WHITE">Asian and White</option>
+                                    <option value="BLACK">Black or African American</option>
+                                    <option value="BLACK_WHITE">Black and White</option>
+                                    <option value="AIAN">American Indian or Alaska Native</option>
+                                    <option value="NHPI">Native Hawaiian or Other Pacific Islander</option>
+                                    <option value="WHITE">White</option>
+                                    <option value="OTHER">Other</option>
+                                    <option value="NOCO">No Co-Applicant</option>
+                                </select>
+                            </td>
+                            <td><label>Ethnicity:</label></td>
+                            <td>
+                                <select id="na-hmda-ethnicity">
+                                    <option value="">-- Not Provided --</option>
+                                    <option value="HISPANIC">Hispanic or Latino</option>
+                                    <option value="NOT_HISPANIC">Not Hispanic or Latino</option>
+                                    <option value="JOINT">Joint</option>
+                                    <option value="UNKNOWN">Unknown</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Sex:</label></td>
+                            <td>
+                                <select id="na-hmda-sex">
+                                    <option value="">-- Not Provided --</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="JOINT">Joint</option>
+                                    <option value="UNKNOWN">Unknown</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </fieldset>
+                <div style="text-align:center; padding:10px;">
+                    <button type="submit" class="btn-primary">Submit Application</button>
+                    &nbsp;
+                    <button type="button" onclick="showPipeline()" class="btn">Cancel</button>
+                </div>
+                <div id="newapp-message"></div>
+            </form>
+        </div>
+
+        <!-- ===== SEARCH VIEW ===== -->
+        <div id="view-search" class="view" style="display:none;">
+            <div class="page-header">
+                <span class="page-title">Loan Search</span>
+            </div>
+            <div class="search-bar">
+                <label>Borrower Name:</label>
+                <input type="text" id="search-borrower" />
+                <label>Loan Number:</label>
+                <input type="text" id="search-loannum" />
+                <label>State:</label>
+                <input type="text" id="search-state" maxlength="2" style="width:40px;" />
+                <button onclick="doSearch()" class="btn">Search</button>
+            </div>
+            <div id="search-results"></div>
+        </div>
+
+        <!-- ===== AGING REPORT VIEW ===== -->
+        <div id="view-aging" class="view" style="display:none;">
+            <div class="page-header">
+                <span class="page-title">Pipeline Aging Report</span>
+                <span class="page-actions">
+                    <button onclick="loadAgingReport()" class="btn">Refresh</button>
+                </span>
+            </div>
+            <div id="aging-content">Loading aging report...</div>
+        </div>
+
+    </td>
+</tr>
+</table>
+
+<!-- ============ FOOTER ============ -->
+<div id="footer">
+    MortgageLOS v4.2.17 &nbsp;|&nbsp; &copy; 2005-2024 Premier Mortgage Solutions, Inc.
+    &nbsp;|&nbsp; <a href="#" onclick="alert('System is up. Last batch run: 09/03/2026 02:14 AM CDT\nNext scheduled: 09/04/2026 02:00 AM CDT'); return false;">System Status: OK</a>
+    &nbsp;|&nbsp; <a href="/swagger" target="_blank">API Documentation</a>
+</div>
+
+</body>
+</html>
